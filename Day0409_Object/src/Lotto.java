@@ -11,7 +11,7 @@ public class Lotto {
 
 	public Lotto() { // 기본생성자
 		// super();
-		lotto = new int[6];
+		lotto = new int[6]; 
 	}
 
 	// lotto를 배열로 입력받은 배열로 초기화

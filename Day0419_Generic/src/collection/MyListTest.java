@@ -20,11 +20,11 @@ public class MyListTest {
 		for (int i = 0; i < myList.size(); i++) {
 			System.out.println(myList.get(i));
 		}
-		
-		//for - each 구문 데이터가 여러개면 다되는게 아니라. Iterable를 구현한 클래스나, 배열만 사용 가능 
-//		for(Str s:strList) {
-//			
-//		}
+
+		// for - each 구문 데이터가 여러개면 다되는게 아니라. Iterable를 구현한 클래스나, 배열만 사용 가능
+		// for(Str s:strList) {
+		//
+		// }
 
 	}
 

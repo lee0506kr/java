@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class StudentList implements Serializable {
 	private static final long serilVersionUID = 4294376767037245148L;
 
-	private Student[] students;
+	private Student[] students; 
 	private Scanner scan;
   
 	public StudentList() { 

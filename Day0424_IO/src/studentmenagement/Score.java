@@ -10,10 +10,10 @@ public class Score implements Serializable{
 	//생성자: 기본생성자/ 국,영,수 점수를 매개변수로 받는 생성자
 	
 	private int kor;
-	private int eng;
+	private transient int eng;
 	private int math;
 	
-	public Score() {
+	public Score() { 
 		
 	}
 	public Score(int kor,int eng, int math) {

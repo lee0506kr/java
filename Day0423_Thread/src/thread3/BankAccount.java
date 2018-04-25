@@ -8,7 +8,7 @@ public class BankAccount {
 		return balance;
 	}
 
-	// balence에 값을 더함
+	// balence에 값을 더함  synchronized(임계구역)
 	public synchronized void deposit(int amount) {
 		balance = balance + amount;
 	}

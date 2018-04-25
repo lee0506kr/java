@@ -33,8 +33,9 @@ public class SetTest {
 		// set이 가지고 있는 요소에 접근할 거기 때문에 set이 가지고 있는 iterator를 이용
 		Iterator<String> it = set1.iterator();
 
-		// hasNext(): 정렬 되어있는데로 찍어준다
+		// hasNext(): 다음값이 있냐?
 		while (it.hasNext()) {
+			
 			String str = it.next();
 			System.out.println(str);
 		}

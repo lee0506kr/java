@@ -2,6 +2,7 @@ package studentmenagement;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,16 +30,20 @@ public class StudentManagement3 {
 	}
 
 	public void fileInput() {
+		ObjectInputStream ois = null;
 
 		// 파일에서 객체를 읽어온다. ObjectInputStream
 		// 객체를 읽어와서 list에다가 참조 시킨다.
-		ObjectInputStream ois = null;
+
 		try {
 			ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream("list.txt")));
 			list = (StudentList) ois.readObject();
-
+			// 파일에서 list 객체 가져와서 내가 관리한 list에 참조시켜주면 된다.
 		} catch (FileNotFoundException e) {
 			System.out.println("파일이 없어요");
+			list = new StudentList();  // 학생을 집어 넣을 수 있는 반을 만들어준다.
+		} catch (EOFException e) {
+			list = new StudentList();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -64,13 +69,13 @@ public class StudentManagement3 {
 
 		try {
 			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("list.txt")));
-
+			
 			StudentList s = list;
 
 			s.getStudents();
 
 			oos.writeObject(s);
-			oos.flush();
+			oos.flush(); // 비우는 역활
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -89,11 +94,11 @@ public class StudentManagement3 {
 
 	public void start() {
 		// 메뉴를 계속해서 출력하기 위해서 while문에서 메뉴를 출력한다.
-		fileInput();
+		fileInput(); // 처음에 보여줘야 하기때문에
 		while (isRun) {
 			showMenu();
 			inputMenu();
-			fileOutput();
+			fileOutput(); // 마지막에 반복으로 돌려서 내용 저장
 		}
 	}
 
@@ -252,6 +257,7 @@ public class StudentManagement3 {
 	}
 
 	public void deleteStudent() {
+
 		// 이름 입력받고, 해당하는 이름이 있는지 검색하고, 있으면 삭제
 		System.out.println("삭제할 학생이름을 적어주세요!");
 		String name = scan.next();

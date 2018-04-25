@@ -5,7 +5,7 @@ public class ScoreTest {
 
 		try {
 			odd.setTotal(11);
-		} catch (Exception e) {
+		} catch (OddNumberException e) {
 			System.out.println(e);
 			e.printStackTrace();
 
