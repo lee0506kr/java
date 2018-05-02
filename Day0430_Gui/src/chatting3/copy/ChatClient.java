@@ -95,7 +95,7 @@ public class ChatClient extends JFrame implements KeyListener {
 		tfNick = new JTextField();
 		tfNick.setBounds(234, 68, 180, 21);
 		panel.add(tfNick);
-		tfNick.setText("이름없음");
+		tfNick.setText("192.168.0.70");
 
 		btnNickSave = new JButton("접속");
 		btnNickSave.setBounds(232, 100, 129, 35);

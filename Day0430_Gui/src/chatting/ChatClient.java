@@ -110,6 +110,7 @@ public class ChatClient extends JFrame implements KeyListener {
 			}
 		});
 
+		
 		btnConnect.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

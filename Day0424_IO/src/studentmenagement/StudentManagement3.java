@@ -1,104 +1,97 @@
 package studentmenagement;
 
+import java.util.Scanner;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Scanner;
+import java.util.InputMismatchException;
 
 public class StudentManagement3 {
-	// 수정해야 할 부분: 입력받을 배열의 길이를 고정시키면 안됨
-	// : 학생의 수만큼만 저장할 수 있는 배열을 관리
-
+	//Management 클래스에 학생정보를 저장하고, 가져오는 기능을 작성
+	private static final String FILE_NAME = "studentList.dat";
+	private MyList<Student> sList;
 	private boolean isRun; // 프로그램을 계속 실행할 것인지 확인하는 변수
 	private Scanner scan;
-	private StudentList list;
-
 	public StudentManagement3() {
-		list = new StudentList();
+		//파일에 데이터가 있다라고 가정을 하면 객체를 새로 만들어 내는 작업이 쓸모가 없음
+		//sList = new MyList<Student>();
+		loadData();
 		isRun = true;
 		scan = new Scanner(System.in);
-
-		// list = file
-		// 임의의 데이터 넣어주기
-		// setDefaultData();
 	}
-
-	public void fileInput() {
-		ObjectInputStream ois = null;
-
-		// 파일에서 객체를 읽어온다. ObjectInputStream
-		// 객체를 읽어와서 list에다가 참조 시킨다.
-
+	
+	public void saveData() {
+		//데이터를 파일에 저장하는 기능
+		//파일출력(객체를 파일에 작성)
+		ObjectOutputStream oos = null;
 		try {
-			ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream("list.txt")));
-			list = (StudentList) ois.readObject();
-			// 파일에서 list 객체 가져와서 내가 관리한 list에 참조시켜주면 된다.
-		} catch (FileNotFoundException e) {
-			System.out.println("파일이 없어요");
-			list = new StudentList();  // 학생을 집어 넣을 수 있는 반을 만들어준다.
-		} catch (EOFException e) {
-			list = new StudentList();
-		} catch (IOException e) {
+			oos = new ObjectOutputStream(
+					new BufferedOutputStream(
+						new FileOutputStream(FILE_NAME)));
+			
+			//파일에 작성해야 하는 데이터>>>> sList
+			oos.writeObject(sList);
+			oos.flush();
+			
+		}catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}catch(IOException e) {
+			e.printStackTrace();
+		}finally {
+			try{
+				if(oos !=null) oos.close();
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	public void loadData() {
+		//파일로부터 데이터를 가져오는 기능
+		//파일입력
+		ObjectInputStream ois = null;
+		try{
+			ois = new ObjectInputStream(
+					new BufferedInputStream(
+						new FileInputStream(FILE_NAME)));
+			//파일에서 sList 객체 가져와서 내가 관리할 sList에
+			//참조 시켜주면 된다. 
+				sList = (MyList<Student>)ois.readObject();
+		
+		}catch(FileNotFoundException e) {
+			System.out.println("파일이 없습니다.");
+			sList = new MyList<Student>();
+		}catch(IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-
-			// 우리가 사용한 자원 닫아주기
-			try {
-				if (ois != null) {
-					ois.close();
-				}
-
-			} catch (IOException e) {
+		}finally {
+			try{
+				if(ois !=null) ois.close(); 
+			}catch(IOException e) {
 				e.printStackTrace();
 			}
 		}
-
-	}
-
-	public void fileOutput() {
-		ObjectOutputStream oos = null;
-
-		try {
-			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("list.txt")));
 			
-			StudentList s = list;
-
-			s.getStudents();
-
-			oos.writeObject(s);
-			oos.flush(); // 비우는 역활
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (oos != null)
-					oos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
+		
+		
+		
+		
 	}
-
+	
+	
+	
+	
 	public void start() {
 		// 메뉴를 계속해서 출력하기 위해서 while문에서 메뉴를 출력한다.
-		fileInput(); // 처음에 보여줘야 하기때문에
 		while (isRun) {
 			showMenu();
 			inputMenu();
-			fileOutput(); // 마지막에 반복으로 돌려서 내용 저장
 		}
 	}
 
@@ -112,7 +105,6 @@ public class StudentManagement3 {
 		System.out.println("* 5. 종료                                          *");
 		System.out.println("***************************");
 		System.out.println("***************************");
-
 	}
 
 	// 메뉴 입력받기
@@ -128,20 +120,20 @@ public class StudentManagement3 {
 		case 2:
 			// 학생정보입력
 			inputStudent();
-
 			break;
 		case 3:
 			// 이름검색
 			searchStudent();
 			break;
 		case 4:
-			// 이름으로 삭제(처음검색된 학생만 삭제)
+			//이름으로 삭제(처음검색된 학생만 삭제)
 			deleteStudent();
-			break;
+			break;	
 		case 5:
 			// 종료
 			System.out.println("종료합니다.");
-			endStudent(); // 프로그램을 종료하기 위해서 상태값을 false로 변경
+			isRun = false; // 프로그램을 종료하기 위해서 상태값을 false로 변경
+			saveData();
 			break;
 		default:
 			// 메뉴 없음
@@ -154,69 +146,61 @@ public class StudentManagement3 {
 	public void showStudents() {
 		System.out.println("학생정보보기");
 
-		for (int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < sList.size(); i++) {
 			printStudent(i);
 		}
 
 	}
-
-	public void endStudent() {
-
-		int x;
-
-		System.out.println("1.종료 2.돌아가기");
-		x = scan.nextInt();
-		if (x == 1) {
-			System.out.println("종료한다");
-			isRun = false;
-		} else if (x == 2) {
-			System.out.println("돌아간다");
-			showMenu();
-		}
-
-	}
-
+	//MyList<Student> sList; 이기 때문에 요소 하나 하나는 Student 객체이다.
 	public void printStudent(int index) {
-		Student[] arr = list.getStudents();
-		System.out.println("이름 : " + arr[index].getName());
-		System.out.println("학년 : " + arr[index].getGrade());
-		System.out.println("평균 : " + arr[index].getAverage());
-		System.out.println("점수: " + arr[index].getScore());
+		Student s = sList.get(index);
+		System.out.println("이름 : " + s.getName());
+		System.out.println("학년 : " + s.getGrade());
+		System.out.println("평균 : " + s.getAverage());
+		System.out.println("점수: " + s.getScore());
 		System.out.println("--------------------------------");
+		//해당 인덱스의 학생정보를 출력
 	}
 
 	// 학생 정보 입력하기 메서드
 	public void inputStudent() {
+		try {
+			System.out.println("학생정보 입력하기");
+			// 학생의 정보를 사용자(키보드)로부터 입력받고
+			// 객체를 만들어서 배열에 저장
+			// 숫자를 입력받는 부분에서 예외가 발생하면
+			// 1을 강제로 입력해 준다.
 
-		System.out.println("학생정보 입력하기");
-		// 학생의 정보를 사용자(키보드)로부터 입력받고
-		// 객체를 만들어서 배열에 저장
-		// 숫자를 입력받는 부분에서 예외가 발생하면
-		// 1을 강제로 입력해 준다.
+			System.out.println("이름을 입력하세요");
+			String name = scan.next();
 
-		System.out.println("이름을 입력하세요");
-		String name = scan.next();
+			System.out.println("학년을 입력하세요");
+			int grade = 0;
+			grade = scan.nextInt();
+			int kor = 0;
+			System.out.println("국어 점수를 입력하세요");
 
-		System.out.println("학년을 입력하세요");
-		int grade = 0;
-		grade = scan.nextInt();
-		int kor = 0;
-		System.out.println("국어 점수를 입력하세요");
+			kor = scan.nextInt();
 
-		kor = scan.nextInt();
+			System.out.println("영어 점수를 입력하세요");
+			int eng = scan.nextInt();
 
-		System.out.println("영어 점수를 입력하세요");
-		int eng = scan.nextInt();
+			System.out.println("수학 점수를 입력하세요");
+			int math = scan.nextInt();
 
-		System.out.println("수학 점수를 입력하세요");
-		int math = scan.nextInt();
-
-		Student student = new Student(name, grade, kor, eng, math);
-
-		list.add(student);
-
-		System.out.println(list.size());
-
+			// 객체를 만들어서 배열에다가 넣기
+			 Student s = new Student(name, grade, kor, eng, math);
+			 
+			 //만든 학생 객체를 StudentList의 객체에 넣어서 보관
+			 sList.add(s);
+			 
+			 
+			 System.out.println("추가되었습니다.");
+		} catch (InputMismatchException e) {
+			/* e.printStackTrace(); */
+			System.out.println("잘못입력하셨습니다.");
+			return;
+		}
 	}
 
 	// 학생 정보 이름검색 메서드
@@ -231,46 +215,42 @@ public class StudentManagement3 {
 		// 학생정보를 출력
 		System.out.println("이름을 입력하세요");
 		String keyword = scan.next();
-		Student[] students = list.getStudents();
-		for (int i = 0; i < list.size(); i++) {
-			// students[i].getName()와 keyword 비교
 
-			String name = students[i].getName();
-			// 문자열 비교 : equals(), contains(s)
-			// name.equals(keyword);
-			// name 문자열이 keyword를 포함하고 있으면 true, 아니면 false
-			// name.contains(keyword);
+		for (int i = 0; i < sList.size(); i++) {
+			String name = sList.get(i).getName();
 
 			if (name.contains(keyword)) {
-				// 이름이 검색어를 포함하고 있다.
-				// 해당학생을 출력
-				// System.out.println("이름 : " + students[i].getName());
-				// System.out.println("학년 : " + students[i].getGrade());
-				// System.out.println("평균 : " + students[i].getAverage());
-				// System.out.println("점수: " + students[i].getScore());
-				// System.out.println("--------------------------------");
 				printStudent(i);
 			}
-
 		}
-
 	}
-
 	public void deleteStudent() {
-
-		// 이름 입력받고, 해당하는 이름이 있는지 검색하고, 있으면 삭제
-		System.out.println("삭제할 학생이름을 적어주세요!");
-		String name = scan.next();
-
-		if (list.size() == 0) {
+		//이름 입력받고, 해당하는 이름이 있는지 검색하고, 있으면 삭제
+		if(sList.size()==0) {
 			System.out.println("학생이 없습니다.");
 			return;
 		}
-
-		list.delete(name);
-		System.out.println("삭제 되었습니다.");
+		String name = scan.next();
+		//이름을 입력받아서 인덱스를 찾고, 인덱스를 sList.remove()
+		//파라미터로 넘겨줌
+		//인덱스 찾아서 파라미터로 넘겨줌,반복종료
+		for(int i=0;i<sList.size();i++) {
+			
+			Student tmpStudent = sList.get(i);
+			String studentName = tmpStudent.getName();
+			if(studentName.equals(name)) {
+				sList.remove(i);
+				break;
+			}
+			
+			
+//			if(sList.get(i).getName().equals(name)) {
+//				sList.remove(i);
+//				break;
+//			}
+		}
+			
 	}
-
-	// 임의의 학생정보를 배열에 넣어주는 임시메서드
-
+	
+	
 }
